@@ -5,6 +5,7 @@ import {selectCartItems, selectTotalPrice} from "../../redux/cart/cart.selector"
 
 import './checkout.styles.scss'
 import CeckoutItem from "../../components/checkout-item/checkout-item.component";
+import StripeButton from "../../components/stripe-button/stripe-button.component";
 
 const CheckOut = ({cartItems, totalPrice}) => (
     <div className="checkout-page">
@@ -26,13 +27,19 @@ const CheckOut = ({cartItems, totalPrice}) => (
             </div>
         </div>
         {
-            cartItems.map(cartItem =>(
+            cartItems.map(cartItem => (
                 <CeckoutItem key={cartItem.id} cartItem={cartItem}/>
             ))
         }
         <div className="total">
             <span>Total = ${totalPrice}</span>
         </div>
+        <div className="test-message">
+            *Please use the following test credit card for payment*
+            <br/>
+            4242 4242 4242 4242 -- Exp: 01/22 CVV: 123
+        </div>
+        <StripeButton price={totalPrice}/>
     </div>
 )
 
