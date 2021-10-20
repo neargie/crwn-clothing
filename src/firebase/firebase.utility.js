@@ -11,6 +11,8 @@ const config = {
     appId: "1:108036590962:web:77928f5724f63bdfe8a1eb"
 };
 
+firebase.initializeApp(config);
+
 // Collection -> Document -> Collection -> Document
 // Users -> Iogt5vOzqCTXamCefYEUav1tp3n1 -> createdAt, displayName, email -> Cart
 // create user if login success
@@ -44,7 +46,30 @@ export const createUserProfileDocument = async (userAuth, additionalData) => { /
     return userRef;
 }
 
-firebase.initializeApp(config);
+export const addCollectionAndDocuments = async (collectionKey, objectToAdd) => {
+    const collectionReference = firestore.collection(collectionKey);
+
+    const batch = firestore.batch(); // create session
+    objectToAdd.forEach(obj => {
+        const documentReference = collectionReference.doc();
+        batch.set(documentReference, obj); // set data into batch
+    })
+
+    return await batch.commit(); // after successfully set, batch will commit set data
+}
+
+export const convertCollectionsSnapshotToMap = collections => {
+    const transformedCollection = collections.docs.map(doc => {
+        const {title, routeName, items} = doc.data();
+
+        return {title, routeName, items, id: doc.id}
+    });
+
+    return transformedCollection.reduce((accumulator, collection) => {
+        accumulator[collection.title.toLowerCase()] = collection;
+        return accumulator;
+    },{})
+}
 
 export const auth = firebase.auth();
 export const firestore = firebase.firestore();
